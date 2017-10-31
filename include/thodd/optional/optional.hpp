@@ -22,12 +22,16 @@ thodd
         type_t && obj) 
     {
         optional<std::decay_t<decltype(obj)>> opt ;
-        
-        if constexpr (std::is_lvalue_reference_v<decltype(obj)>)
-            opt.ptr = &std::forward<decltype(obj)>(obj) ;
-        else 
-            opt.opt = obj ;   
-        
+        opt.opt = obj ;           
+        return opt ;
+    }
+
+    template <typename type_t>
+    constexpr optional<type_t> 
+    make_optional (type_t * obj) 
+    {
+        optional<type_t> opt ;
+        opt.ptr = obj ;
         return opt ;
     }
 
