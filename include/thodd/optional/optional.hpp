@@ -15,15 +15,34 @@ thodd
         type_t* ptr { nullptr };
     } ;
 
-    template <
-        typename type_t>
     constexpr auto 
     make_optional (
-        type_t && obj) 
+        auto && obj) 
     {
         optional<std::decay_t<decltype(obj)>> opt ;
         opt.opt = obj ;           
         return opt ;
+    }
+
+    template <
+        typename type_t>
+    constexpr auto 
+    make_optional () 
+    {
+        return 
+        optional<type_t> {} ;
+    }
+
+    constexpr auto 
+    make_optional_if (auto && obj, auto && predicate, auto && transform)
+    {
+        using type_t = std::decay_t<decltype(std::forward<decltype(transform)>(transform)(std::forward<decltype(obj)>(obj)))>;
+
+        if (std::forward<decltype(predicate)>(predicate)
+            (std::forward<decltype(obj)>(obj)))
+            return thodd::make_optional(std::forward<decltype(transform)>(transform)(std::forward<decltype(obj)>(obj))) ;
+        else 
+            return thodd::make_optional<type_t>() ;
     }
 
     template <typename type_t>
@@ -95,6 +114,46 @@ thodd
     {
         if (has_value(opt))
             std::forward<decltype(func)>(func)(value_of(opt)) ;
+    }
+
+
+
+
+
+    constexpr auto 
+    if_exists (
+        optional<auto> & opt, 
+        auto && func, 
+        auto && efunc)
+    {
+        if (has_value(opt))
+            std::forward<decltype(func)>(func)(value_of(opt)) ;
+        else
+            std::forward<decltype(efunc)>(efunc)() ; 
+    }   
+
+    constexpr auto 
+    if_exists (
+        optional<auto> const & opt, 
+        auto && func, 
+        auto && efunc)
+    {
+        if (has_value(opt))
+            std::forward<decltype(func)>(func)(value_of(opt)) ;
+        else
+            std::forward<decltype(efunc)>(efunc)() ;
+    }
+
+    constexpr auto 
+    if_exists (
+        optional<auto> && opt, 
+        auto && func, 
+        auto && efunc)
+    {
+        if (has_value(opt))
+            std::forward<decltype(func)>(func)(value_of(opt)) ;
+        else
+            std::forward<decltype(efunc)>(efunc)() ;
     }
 }
 
