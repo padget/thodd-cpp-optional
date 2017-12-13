@@ -44,6 +44,17 @@ thodd
       return thodd::make_optional<type_t>() ;
   }
 
+  constexpr auto 
+  make_optional_if (auto && obj, auto && predicate)
+  {
+    using type_t = std::decay_t<decltype(std::forward<decltype(obj)>(obj))>;
+
+    if (std::forward<decltype(predicate)>(predicate) (std::forward<decltype(obj)>(obj)))
+      return thodd::make_optional(std::forward<decltype(obj)>(obj)) ;
+    else 
+      return thodd::make_optional<type_t>() ;
+  }
+
   template <typename type_t>
   constexpr optional<type_t> 
   make_optional (type_t * obj) 
